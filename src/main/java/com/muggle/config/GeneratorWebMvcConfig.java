@@ -1,0 +1,22 @@
+package com.muggle.config;
+
+    import org.springframework.context.annotation.Configuration;
+    import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+    import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+    import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+/**
+ * Description
+ * Date 2021/8/6
+ * Created by muggle
+ */
+@Configuration
+public class GeneratorWebMvcConfig implements WebMvcConfigurer {
+
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler( "/poseidon-ui/**")
+            .addResourceLocations("classpath:/psf-ui/");
+    }
+}
