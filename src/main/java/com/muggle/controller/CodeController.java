@@ -3,26 +3,20 @@ package com.muggle.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.muggle.MyUIcodeCommand;
 import com.muggle.ProjectMessageVO;
+import com.muggle.poseidon.entity.CodeCommand;
 import com.muggle.poseidon.entity.ProjectMessage;
 import com.muggle.poseidon.factory.CodeCommandInvoker;
 import com.muggle.poseidon.genera.SimpleCodeGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.muggle.poseidon.constant.GlobalConstant.SEPARATION;
@@ -36,15 +30,19 @@ import static com.muggle.poseidon.constant.GlobalConstant.USER_DIR;
 @RestController
 @RequestMapping("/ponseidon")
 public class CodeController {
+    @Autowired(required = false)
+    List<CodeCommand> codeCommands;
     private static final Logger LOGGER = LoggerFactory.getLogger(CodeController.class);
 
 
     @PostMapping(value = "/create",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String create(@RequestBody ProjectMessageVO projectMessageVO){
-
         final SimpleCodeGenerator simpleCodeGenerator = new SimpleCodeGenerator(convertMessage(projectMessageVO));
         final CodeCommandInvoker invoker = new CodeCommandInvoker(simpleCodeGenerator);
         invoker.popCommond("createPom");
+        if (!CollectionUtils.isEmpty(codeCommands)){
+            codeCommands.forEach(invoker::addCommond);
+        }
         if (!projectMessageVO.getExcloudCommonds().contains("createUIpom")){
             invoker.addCommond(new MyUIcodeCommand());
         }
