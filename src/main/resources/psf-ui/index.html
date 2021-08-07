@@ -146,7 +146,7 @@
                     tableNames: "多个表用英文逗号隔开"
                 },
                 result: 'waiting',
-                checkList: [],
+                checkList: ['createCode'],
 
             }
         },
@@ -160,7 +160,7 @@
                 _this.msg.tableName = arr;
                 _this.msg.swagger = _this.extendField.swaggerStr;
                 var  allList=["createUIpom", "createCode", "createApplication", "createBootstrap",
-                    "createBanner", "createConfig","createLogback","createMainClass","createReadme"],temp = "",targ="";
+                    "createBanner", "createConfig","createLogback","createMainClass","createReadme"];
                 _this.msg.excloudCommonds= allList.filter(function (val) { return _this.checkList.indexOf(val) === -1 })
                 axios.post('/ponseidon/create', this.msg)
                     .then(function (response) {
@@ -170,16 +170,14 @@
                     });
             },
             loadingData() {
-                console.log(">>>>>>>>>>>>>>>");
                 let _this = this;
                 axios.get('/ponseidon/message')
                     .then(function (response) {
-                        _this.msg = response.data;
-                        if (_this.msg.otherField.parentVersion===null){
-                            _this.msg.otherField.parentVersion="1.0-SNAPSHOT";
-                            _this.extendField.swaggerStr=_this.msg.swagger.toString();
+                        if (response.data.otherField.parentVersion==null){
+                            response.data.otherField.parentVersion="1.0-SNAPSHOT";
                         }
-                        console.log(response.data)
+                        _this.extendField.swaggerStr=_this.msg.swagger.toString();
+                        _this.msg = response.data;
                     })
                     .catch(function (error) {
                         console.log(error);

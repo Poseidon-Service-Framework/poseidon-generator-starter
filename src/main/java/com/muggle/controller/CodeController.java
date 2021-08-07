@@ -40,6 +40,7 @@ public class CodeController {
         try {
         final SimpleCodeGenerator simpleCodeGenerator = new SimpleCodeGenerator(convertMessage(projectMessageVO));
         final CodeCommandInvoker invoker = new CodeCommandInvoker(simpleCodeGenerator);
+
         invoker.popCommond("createPom");
         if (!CollectionUtils.isEmpty(codeCommands)){
             codeCommands.forEach(invoker::addCommond);
@@ -48,8 +49,35 @@ public class CodeController {
             invoker.addCommond(new MyUIcodeCommand());
         }
         projectMessageVO.getExcloudCommonds().forEach(invoker::popCommond);
+            invoker.addCommond(new CodeCommand() {
+                @Override
+                public String getName() {
+                    return "serializ";
+                }
+                @Override
+                public void excute() throws Exception {
+                    StringBuilder path = new StringBuilder();
+                    path.append(System.getProperty(USER_DIR)).append(SEPARATION).append("projectMessageVO.json");
+                    final File file = new File(path.toString());
+                    if (!file.exists()){
+                        try {
+                            file.createNewFile();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    try (final FileOutputStream fileOutputStream = new FileOutputStream(file)){
+                        ObjectMapper mapper = new ObjectMapper();
+                        fileOutputStream.write( mapper.writeValueAsString(projectMessageVO).getBytes());
+                        LOGGER.info("==========> [持久化提交数据]");
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         invoker.execute();
-        serializJson(projectMessageVO);
         return "{\"result\":\"success\"}";
         }catch (Exception e){
             LOGGER.error(e.getMessage(),e);
@@ -57,27 +85,6 @@ public class CodeController {
         }
     }
 
-    private void serializJson(ProjectMessageVO projectMessageVO) {
-        StringBuilder path = new StringBuilder();
-        path.append(System.getProperty(USER_DIR)).append(SEPARATION).append("projectMessageVO.json");
-        final File file = new File(path.toString());
-        if (!file.exists()){
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        try (final FileOutputStream fileOutputStream = new FileOutputStream(file)){
-            ObjectMapper mapper = new ObjectMapper();
-            fileOutputStream.write( mapper.writeValueAsString(projectMessageVO).getBytes());
-            LOGGER.info("==========> [持久化提交数据]");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     @GetMapping(value = "/message",produces = MediaType.APPLICATION_JSON_UTF8_VALUE )
     public String getMessage(){
