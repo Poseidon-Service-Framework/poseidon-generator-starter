@@ -37,6 +37,7 @@ public class CodeController {
 
     @PostMapping(value = "/create",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String create(@RequestBody ProjectMessageVO projectMessageVO){
+        try {
         final SimpleCodeGenerator simpleCodeGenerator = new SimpleCodeGenerator(convertMessage(projectMessageVO));
         final CodeCommandInvoker invoker = new CodeCommandInvoker(simpleCodeGenerator);
         invoker.popCommond("createPom");
@@ -46,10 +47,14 @@ public class CodeController {
         if (!projectMessageVO.getExcloudCommonds().contains("createUIpom")){
             invoker.addCommond(new MyUIcodeCommand());
         }
-        projectMessageVO.getExcloudCommonds().forEach(name->{});
+        projectMessageVO.getExcloudCommonds().forEach(invoker::popCommond);
         invoker.execute();
         serializJson(projectMessageVO);
         return "{\"result\":\"success\"}";
+        }catch (Exception e){
+            LOGGER.error(e.getMessage(),e);
+            return "{\"result\":\" 生成代码发生错误，错误原因："+e.getMessage()+"\"}";
+        }
     }
 
     private void serializJson(ProjectMessageVO projectMessageVO) {
