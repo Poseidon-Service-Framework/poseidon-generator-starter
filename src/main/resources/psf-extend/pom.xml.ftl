@@ -6,7 +6,7 @@
 
     <groupId>${projectPackage}</groupId>
     <artifactId>${module?default('test')}</artifactId>
-    <version>${otherField.parentVersion}</version>
+    <version>${otherField.parentVersion?default('1.0-SNAPSHOT')}</version>
     <packaging>jar</packaging>
 
     <parent>
