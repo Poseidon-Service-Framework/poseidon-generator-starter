@@ -6,6 +6,7 @@ import com.muggle.ProjectMessageVO;
 import com.muggle.poseidon.entity.CodeCommand;
 import com.muggle.poseidon.entity.ProjectMessage;
 import com.muggle.poseidon.factory.CodeCommandInvoker;
+import com.muggle.poseidon.genera.CodeGenerator;
 import com.muggle.poseidon.genera.SimpleCodeGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +56,7 @@ public class CodeController {
                     return "serializ";
                 }
                 @Override
-                public void excute() throws Exception {
+                public void excute(CodeGenerator codeGenerator) throws Exception {
                     StringBuilder path = new StringBuilder();
                     path.append(System.getProperty(USER_DIR)).append(SEPARATION).append("projectMessageVO.json");
                     final File file = new File(path.toString());
