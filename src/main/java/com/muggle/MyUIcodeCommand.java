@@ -28,10 +28,9 @@ public class MyUIcodeCommand implements CodeCommand {
     }
 
     @Override
-    public void excute() throws Exception {
-        final AbstractTemplateEngine templateEngine = CodeFactory
-            .getCodeGenerator().getTemplateEngine();
-        ProjectMessage projectMessage =  CodeFactory.getCodeGenerator().getMessage();
+    public void excute(CodeGenerator codeGenerator) throws Exception {
+        final AbstractTemplateEngine templateEngine =codeGenerator.getTemplateEngine();
+        ProjectMessage projectMessage =  codeGenerator.getMessage();
         StringBuilder path = new StringBuilder();
         path.append(System.getProperty("user.dir")).append("/");
         if (!StringUtils.isEmpty(projectMessage.getModule())) {
